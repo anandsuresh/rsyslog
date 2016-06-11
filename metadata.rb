@@ -18,6 +18,7 @@ supports          'fedora', '>= 20.0'
 supports          'scientific'
 supports          'amazon'
 supports          'oracle'
+supports          'freebsd'
 
 depends           'compat_resource'
 

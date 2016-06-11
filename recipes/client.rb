@@ -55,7 +55,7 @@ else
   template "#{node['rsyslog']['config_prefix']}/rsyslog.d/49-remote.conf" do
     source    "49-#{remote_type}.conf.erb"
     owner     'root'
-    group     'root'
+    group     node['root_group']
     mode      '0644'
     variables(servers: rsyslog_servers)
     notifies  :restart, "service[#{node['rsyslog']['service_name']}]"

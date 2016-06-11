@@ -126,6 +126,11 @@ when 'omnios'
   default['rsyslog']['service_name'] = 'system/rsyslogd'
   default['rsyslog']['modules'] = %w(immark imsolaris imtcp imudp)
   default['rsyslog']['group'] = 'root'
+when 'freebsd'
+  default['rsyslog']['service_name'] = 'rsyslogd'
+  default['rsyslog']['config_prefix'] = '/usr/local/etc'
+  default['rsyslog']['modules'] = %w(immark imuxsock imklog imtcp imudp)
+  default['rsyslog']['group'] = 'wheel'
 when 'suse'
   default['rsyslog']['service_name'] = 'syslog'
 end

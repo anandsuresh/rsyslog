@@ -27,7 +27,7 @@ end
 
 directory "#{node['rsyslog']['config_prefix']}/rsyslog.d" do
   owner 'root'
-  group 'root'
+  group node['root_group']
   mode  '0755'
 end
 
@@ -42,7 +42,7 @@ end
 template "#{node['rsyslog']['config_prefix']}/rsyslog.conf" do
   source  'rsyslog.conf.erb'
   owner   'root'
-  group   'root'
+  group   node['root_group']
   mode    '0644'
   notifies :restart, "service[#{node['rsyslog']['service_name']}]"
 end
@@ -50,7 +50,7 @@ end
 template "#{node['rsyslog']['config_prefix']}/rsyslog.d/50-default.conf" do
   source  '50-default.conf.erb'
   owner   'root'
-  group   'root'
+  group   node['root_group']
   mode    '0644'
   notifies :restart, "service[#{node['rsyslog']['service_name']}]"
 end
@@ -65,6 +65,15 @@ elsif platform_family?('smartos', 'omnios')
   service 'system-log' do
     action :disable
   end
+elsif platform_family?('freebsd')
+  # syslog and newsyslog needs to be stopped before rsyslog can be started on FreeBSD
+  service 'syslogd' do
+    action [:stop, :disable]
+  end
+
+  service 'newsyslog' do
+    action [:stop, :disable]
+  end
 end
 
 if platform_family?('omnios')
@@ -72,7 +81,7 @@ if platform_family?('omnios')
   template '/var/svc/manifest/system/rsyslogd.xml' do
     source 'omnios-manifest.xml.erb'
     owner 'root'
-    group 'root'
+    group node['root_group']
     mode '0644'
     notifies :run, 'execute[import rsyslog manifest]', :immediately
   end

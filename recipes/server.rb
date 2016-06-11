@@ -32,7 +32,7 @@ end
 template "#{node['rsyslog']['config_prefix']}/rsyslog.d/35-server-per-host.conf" do
   source   '35-server-per-host.conf.erb'
   owner    'root'
-  group    'root'
+  group    node['root_group']
   mode     '0644'
   notifies :restart, "service[#{node['rsyslog']['service_name']}]"
 end

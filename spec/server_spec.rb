@@ -80,6 +80,33 @@ describe 'rsyslog::server' do
         expect(template).to notify(service_resource).to(:restart)
       end
     end
+
+    context 'on FreeBSD' do
+      let(:chef_run) do
+        ChefSpec::ServerRunner.new(platform: 'freebsd', version: '10.3') do |node|
+          node.set['rsyslog']['server'] = false
+        end.converge(described_recipe)
+      end
+
+      let(:template) { chef_run.template('/usr/local/etc/rsyslog.d/35-server-per-host.conf') }
+
+      it 'creates the template' do
+        expect(chef_run).to render_file(template.path).with_content('/srv/rsyslog/%$YEAR%/%$MONTH%/%$DAY%/%HOSTNAME%/auth.log')
+      end
+
+      it 'is owned by root:wheel' do
+        expect(template.owner).to eq('root')
+        expect(template.group).to eq('wheel')
+      end
+
+      it 'has 0644 permissions' do
+        expect(template.mode).to eq('0644')
+      end
+
+      it 'notifies restarting the service' do
+        expect(template).to notify(service_resource).to(:restart)
+      end
+    end
   end
 
   context '/etc/rsyslog.d/remote.conf file' do
